@@ -51,6 +51,7 @@ with lock:
         clist = []
         for i in range(int(nenvs)):
             clist.append("cenv" + str(i))
+            
     else:
         # load hickle file
         clist = hickle.load(file_path)
