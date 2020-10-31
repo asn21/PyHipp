@@ -1,9 +1,13 @@
 import DataProcessingTools as DPT
 import matplotlib.pyplot as plt
+import hickle as hkl
+import os
+import numpy as np
 
-class DPTobjectTemplate(DPT.DPObject):
+
+class Waveform(DPT.DPObject):
     # Please change the class name according to your needs
-    filename = '<saveobjectfilename>.hkl'  # this is the filename that will be saved if it's run with saveLevel=1
+    filename = 'waveform.hkl'  # this is the filename that will be saved if it's run with saveLevel=1
     argsList = []  # these is where arguments used in the creation of the object are listed
     level = 'channel'  # this is the level that this object will be created in
 
@@ -41,16 +45,26 @@ class DPTobjectTemplate(DPT.DPObject):
         # .........................................
         # ..................code...................
         # .........................................
-        
+    
         
         # check on the mountainsort template data and create a DPT object accordingly
         # Example:
-        if <data-is-not-empty>:
+        if self.data:
             # create object if data is not empty
             DPT.DPObject.create(self, *args, **kwargs)
         else:
             # create empty object if data is empty
             DPT.DPObject.create(self, dirs=[], *args, **kwargs)            
+        pwd = os.path.normpath(os.getcwd());
+        # 'channelxxx, xxx is the number of the channel'
+        self.channel_filename = [os.path.basename(pwd)]  
+        template_filename = os.path.join(
+            DPT.levels.resolve_level('day', self.channel_filename[0]),
+            'mountains', self.channel_filename[0], 'output', 'templates.hkl')
+        
+        templates = hkl.load(template_filename)
+        
+        self.data = [np.squeeze(templates)]
         
     def append(self, wf):
         # this function will be called by processDirs to append the values of certain fields
